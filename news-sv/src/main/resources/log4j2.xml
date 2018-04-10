@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="debug"><!-- 用来指定log4j本身的打印日志的级别 -->
+       <appenders>
+      
+        <!--这个输出控制台的配置-->
+        <Console name="STDOUT" >
+             <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY" />
+            <!-- 输出日志的格式-->
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level [%logger{50}:%L] [%X{X-B3-TraceId},%X{X-B3-SpanId}] - %msg%n" charset="UTF-8"/>
+        </Console>
+
+		<!-- 
+			性能好，支持滚动策略和删除 
+			fileName：指当前日志的名字
+			filePattern：滚动日期
+			TimeBasedTriggeringPolicy：滚动策略，这里是每天产生一个日志文件
+			DefaultRolloverStrategy：默认的滚动策略
+		-->
+        <RollingRandomAccessFile name="FILE-INFO" fileName="logs/house-info.log"
+            filePattern="logs/house-info.%d{yyyy-MM-dd}.log">
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY" />
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level [%logger{50}:%L] [%X{X-B3-TraceId},%X{X-B3-SpanId}] %tcid - %msg%n" charset="UTF-8" />
+            <TimeBasedTriggeringPolicy  interval="1" />
+            <!-- 超过该大小就备份 -->
+            <!-- <SizeBasedTriggeringPolicy size="100MB"/> -->
+            <!-- 每次只保留一份 -->
+            <DefaultRolloverStrategy max="1" >
+            	<!-- 默认删除策略 -->
+               <Delete basePath="logs" maxDepth="2">
+                    <IfFileName glob="*house-info.*.log" />
+                    <!-- 保留时间 -->
+                    <IfLastModified age="24h" />
+               </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+
+
+        <RollingRandomAccessFile name="FILE-DEBUG" fileName="logs/house-debug.log"
+            filePattern="logs/house-debug.%d{yyyy-MM-dd-HH}.log">
+            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY" />
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS}  [%t] %-5level [%logger{50}:%L] [%X{X-B3-TraceId},%X{X-B3-SpanId}] %tcid - %msg%n" charset="UTF-8" />
+            <TimeBasedTriggeringPolicy  interval="1" />
+            <DefaultRolloverStrategy max="1"  >
+               <Delete basePath="logs" maxDepth="2">
+                    <IfFileName glob="*house-debug.*.log" />
+                    <IfLastModified age="1h" />
+               </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="FILE-WARN" fileName="logs/house-warn.log"
+            filePattern="logs/house-warn.%d{yyyy-MM-dd-HH}.log">
+            <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY" />
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level [%logger{50}:%L] [%X{X-B3-TraceId},%X{X-B3-SpanId}] %tcid - %msg%n" charset="UTF-8" />
+            <TimeBasedTriggeringPolicy  interval="1" />
+             <DefaultRolloverStrategy max="1"  >
+               <Delete basePath="logs" maxDepth="2">
+                    <IfFileName glob="*house-warn.*.log" />
+                    <IfLastModified age="1h" />
+               </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="FILE-ERROR" fileName="logs/house-error.log"
+            filePattern="logs/house-error.%d{yyyy-MM-dd-HH}.log">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY" />
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level [%logger{50}:%L] [%X{X-B3-TraceId},%X{X-B3-SpanId}] %tcid - %msg%n" charset="UTF-8" />
+            <TimeBasedTriggeringPolicy  interval="1" />
+            <DefaultRolloverStrategy max="1"  >
+               <Delete basePath="logs" maxDepth="2">
+                    <IfFileName glob="*house-error.*.log" />
+                    <IfLastModified age="1h" />
+               </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+    </appenders>
+	<!--定义logger，只有定义了logger并引入的appender，appender才会生效-->
+    <loggers>
+    	<!-- 关闭swagger日志 -->
+	    <AsyncLogger name="springfox" level="OFF"></AsyncLogger>
+		<!--     共有8个级别，按照从低到高为：All < Trace < Debug < Info < Warn < Error < Fatal < OFF. -->
+		<!-- includeLocation打印行号 -->
+        <AsyncRoot level="INFO" includeLocation="true" >
+            <AppenderRef ref="FILE-INFO" />
+            <AppenderRef ref="FILE-WARN" />
+            <AppenderRef ref="FILE-ERROR" />
+            <AppenderRef ref="STDOUT" />
+        </AsyncRoot>
+    </loggers>
+</configuration>

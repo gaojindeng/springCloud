@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<meta charset="UTF-8" />
+<title>Insert title here</title>
+</head>
+<body>
+	<div style="width: 400px; margin: auto; text-align: center">
+		<div>
+			<h1 th:text="'标题：'+${news.title}"></h1>
+			<p th:text="'我是作者'+${news.name}"></p>
+			<h4>内容：</h4>
+			<p th:text="'我是内容'+${news.content}"></p>
+		</div>
+		<div style="margin-top: 40px">
+			<h3>下面是评论</h3>
+			<ul>
+				<li th:each="commont : ${commonts}">
+					<p>用户：<span th:text="${commont.name}" style="margin-right:20px;"></span>
+						内容：<span th:text="${commont.content}"></span>
+					</p>
+				</li>
+			</ul>
+		</div>
+
+		<div style="margin-top: 40px">
+			<h3>评论</h3>
+			<form action="/comment/add" method="post">
+				<input name="nid" type="hidden" th:value="${news.nid}"/>
+				<input name="uid" type="hidden" th:value="${session.uid}"/>
+				<textarea rows="10" cols="20" name="content">
+				
+				</textarea>
+				<input type="submit"/>
+			</form>
+		</div>
+	</div>
+</body>
+</html>
