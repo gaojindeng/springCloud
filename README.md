@@ -26,3 +26,4 @@ create table comment(
     uid int not null
 )
 ```
+![微服务基本架构图](/springCloud.jpg)
